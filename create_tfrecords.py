@@ -50,3 +50,20 @@ def write_tfrecord(examples, labels, filename):
             tf_example = tf.train.Example(features=tf.train.Features(feature=feature))
             
             writer.write(tf_example.SerializeToString())
+            
+if __name__ == "__main__":
+    # Generate some data!
+    train_filename = "train.tfrecords"
+    test_filename = "test.tfrecords"
+    
+    train_size = 8192
+    test_size = 1024
+    
+    # Train
+    examples, labels = create_dataset(train_size)
+    write_tfrecord(examples, labels, train_filename)
+    
+    # Test
+    examples, labels = create_dataset(test_size)
+    write_tfrecord(examples, labels, test_filename)
+    
