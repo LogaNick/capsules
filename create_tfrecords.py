@@ -51,6 +51,38 @@ def write_tfrecord(examples, labels, filename):
             
             writer.write(tf_example.SerializeToString())
             
+def load_tfrecord(filename):
+    """
+    This is heavily based off the EM code
+    """
+    # Create the file queue
+    filename_queue = tf.train.string_input_producer([filename])
+    reader = tf.TFRecordReader()
+    _, serialized_example = reader.read(filename_queue)
+    
+    # Parse single example
+    features = tf.parse_single_example(serialized_example,
+                                   features={
+                                       'example': tf.FixedLenFeature([], tf.float32),
+                                       'label': tf.FixedLenFeature([], tf.float32) # May need to specifiy the length of the array ie tf.FixedLenFeature([16], tf.float32)
+                                   })
+    
+    # Decode
+    
+    # Label cast
+    label = features['label']
+    label = tf.cast(label, tf.float32)
+    
+    # example cast
+    example = features["example"]
+    example = tf.cast(example, tf.float32)
+    #pose = tf.reshape(pose, [4])
+    
+    x, y = tf.train.shuffle_batch([example, label], allow_smaller_final_batch=False, batch_size=128, capacity=1028, min_after_dequeue=512)#, num_threads=cfg.num_threads, batch_size=cfg.batch_size, capacity=cfg.batch_size * 64,
+                              #min_after_dequeue=cfg.batch_size * 32, )
+    
+    return x, y
+            
 if __name__ == "__main__":
     # Generate some data!
     train_filename = "train.tfrecords"
