@@ -11,8 +11,16 @@ def create_dataset(size=1024, dimensions=2, mean=0, scale=1, separate=False):
     Vectors generated are normally distributed with a mean at the origin
     by default
     
-    separate set to false (default) flattens the example vectors. Otherwise,
-    you'll get a list of lists representing the two vectors
+    Args:
+      size: number of examples
+      dimension: 2-d points
+      mean: centred at origin if 0
+      scale: std
+      separate: false (default) flattens the example vectors. Otherwise,
+        you'll get a list of lists representing the two vectors
+
+    Returns:
+      examples, labels
     """
     
     examples = []
@@ -22,7 +30,7 @@ def create_dataset(size=1024, dimensions=2, mean=0, scale=1, separate=False):
         example_left = np.random.normal(size=dimensions, scale=scale, loc=mean)
         example_right = np.random.normal(size=dimensions, scale=scale, loc=mean)
         
-        label = example_right - example_left
+        label = example_right - example_left # this equates to velocity
         
         if separate:
             examples.append([example_left, example_right])
@@ -37,6 +45,11 @@ def create_dataset(size=1024, dimensions=2, mean=0, scale=1, separate=False):
 def write_tfrecord(examples, labels, filename):
     """
     Writes a tfrecord to filename with the given examples, labels
+
+    Args:
+      example: an array or list of numbers (must cast to float)
+      labels: an array or list of numbers (must cast to float)
+      filename: output tfrecord filename
     """
     with tf.python_io.TFRecordWriter(filename) as writer:
         for example, label in zip(examples, labels):
@@ -54,6 +67,12 @@ def write_tfrecord(examples, labels, filename):
 def load_tfrecord(filename):
     """
     This is heavily based off the EM code
+
+    Args:
+      filename: name of tfrecord file to load
+
+    Returns:
+      x, y: example, label tuple
     """
     # Create the file queue
     filename_queue = tf.train.string_input_producer([filename])
@@ -66,9 +85,7 @@ def load_tfrecord(filename):
                                        'example': tf.FixedLenFeature([], tf.float32),
                                        'label': tf.FixedLenFeature([], tf.float32) # May need to specifiy the length of the array ie tf.FixedLenFeature([16], tf.float32)
                                    })
-    
-    # Decode
-    
+        
     # Label cast
     label = features['label']
     label = tf.cast(label, tf.float32)
