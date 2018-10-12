@@ -88,7 +88,7 @@ def dynamic_routing(U_j_given_i, iterations, input_capsule_layer, output_capsule
 
 
 u1 = np.array([1, 2])
-u2 = np.array([2, 3])
+u2 = np.array([4, 3])
 
 # Weight matrices W_i_j
 W_1_1 = np.eye(2)
@@ -154,10 +154,15 @@ for _ in range(r):
 
 
 
-# Output layer with weights 
+# Output linear layer with weights 
 # TODO: Fully connected layer
+weights_output_1 = np.array([-1, -1]) # x
+weights_output_2 = np.array([1, 1]) # y
+biases = np.array([0, 0])
+output1 = weights_output_1[0] * v_1[0] + weights_output_2[0] * v_2[0] + biases[0]
+output2 = weights_output_1[1] * v_1[1] + weights_output_2[1] * v_2[1] + biases[1]
 
-
+print("Output (x, y): ({},{})".format(output1, output2))
 
 """
 U_j_give_i = np.concatenate([u1, u2], axis=1).T
