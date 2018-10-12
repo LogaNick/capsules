@@ -4,6 +4,7 @@ Testing functions for the Notebook locally
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def squash(s):
     """
@@ -87,7 +88,7 @@ def dynamic_routing(U_j_given_i, iterations, input_capsule_layer, output_capsule
 #
 
 
-u1 = np.array([1, 2])
+u1 = np.array([0, 10])
 u2 = np.array([4, 3])
 
 # Weight matrices W_i_j
@@ -113,7 +114,8 @@ b_2_2 = 0
 
 
 # r iterations
-r = 3
+r = 15
+routing_history= []
 for _ in range(r):
     print("iteration {}".format(_))
     print("b_1: [{}, {}]".format(b_1_1, b_1_2))
@@ -145,6 +147,8 @@ for _ in range(r):
     print("v_1: {}".format(v_1.T))
     print("v_2: {}".format(v_2.T))
     
+    routing_history.append(np.array([*(u1 - v_1), *(u2 - v_2)]))
+    
     # for all capsule i in layer l and capsule j in layer (l + 1): b_ij <- b_ij + u_j_given_i dot v_j
     b_1_1 = b_1_1 + np.asscalar(np.dot(u_1_given_1, v_1))
     b_1_2 = b_1_2 + np.asscalar(np.dot(u_2_given_1, v_2))
@@ -152,7 +156,10 @@ for _ in range(r):
     b_2_2 = b_2_2 + np.asscalar(np.dot(u_2_given_2, v_2))
     
 
-
+# Plot the routing history
+plt.semilogy(routing_history, 'o--')
+plt.xlabel("Iteration")
+plt.ylabel("Value")
 
 # Output linear layer with weights 
 # TODO: Fully connected layer
